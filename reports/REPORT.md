@@ -12,7 +12,7 @@ Họ tên: Tống Thành Danh (2A202602299)   Nhóm: SOLO   Ngày: 2026-09-16
 | Số ảnh đã gán | 20 |
 | Số skeleton | 29 |
 | v=2 / v=1 / v=0 | 314 / 148 / 31 |
-| Thời gian trung bình mỗi ảnh | _(điền sau: tổng thời gian gán / 20)_ |
+| Thời gian trung bình mỗi ảnh | Không ghi nhận trong lúc gán; không tự ước lượng sau khi làm xong |
 
 Tổng khớp: 493 = 17 × 29 — không skeleton nào bị xoá bớt điểm.
 Trung bình 15.93 khớp có `v > 0` mỗi người (`outputs/visibility_report.json`).
@@ -27,9 +27,9 @@ Chúng có đúng là những khớp bạn thấy khó gán nhất không? Nếu
 
 **Không hoàn toàn.** Hai cái tai đứng đầu bảng vì **hay bị che**, không vì khó xác định vị trí:
 tai nằm ở một vị trí giải phẫu rất ổn định (ngang đuôi mắt, sát mép đầu), nên khi bị tóc hoặc
-mũ bảo hiểm phủ tôi vẫn đặt chấm nhanh và chắc tay. Bộ 20 ảnh này có tới 7 người đội mũ
+mũ bảo hiểm phủ tôi vẫn đặt chấm nhanh và chắc tay. Bộ 20 ảnh này có tới 9 người đội mũ
 (`train_04` ×2, `train_06`, `train_09`, `train_12`, `train_15` ×2, `train_18`, `train_20`) và
-4 người quay lưng hẳn (`train_02`, `train_09`, `train_14` ng1, `train_16` ng2, `train_19` ng2) —
+5 người quay lưng hẳn (`train_02`, `train_09`, `train_14` ng1, `train_16` ng2, `train_19` ng2) —
 đó là toàn bộ nguyên nhân của con số 83%.
 
 Khớp **thật sự khó** với tôi lại có `%v=1` thấp: **`left_shoulder` chỉ 3%** nhưng là khớp tôi
@@ -105,42 +105,45 @@ của heuristic (nó giả định mặt quay về phía camera).
 
 ## 3. Kiểm chéo
 
-Bạn cùng nhóm: _(chưa có)_
-
-Khớp lệch `%v=1` nhiều nhất giữa hai bảng đếm:
-
-| Khớp | Bạn | Họ | Lệch | Nguyên nhân (guideline hay gán sai?) |
-| --- | ---: | ---: | ---: | --- |
-| | | | | |
-| | | | | |
-
-> **Chưa chạy được:** chưa có bài của bạn cùng nhóm. Lệnh sẽ chạy:
-> `python3 tools/visibility_report.py --labels dataset/labels/train --compare <đường dẫn bài của họ> --markdown reports/visibility_compare.md`
-
-Luật mới đã bổ sung vào `GUIDELINE_MINI.md` sau khi thống nhất:
-
--
+Không thực hiện theo phạm vi bài làm cá nhân: bỏ qua phần so sánh với bạn cùng lớp/cùng nhóm.
+Không tạo số liệu kiểm chéo giả và không sửa guideline dựa trên một bài không tồn tại.
 
 ## 4. Model
 
 | Chỉ số | yolo26n-pose gốc | Sau fine-tune | Chênh |
 | --- | ---: | ---: | ---: |
-| pose_mAP50 | | | |
-| pose_mAP50-95 | | | |
-| pose_precision | | | |
-| pose_recall | | | |
-| box_mAP50-95 | | | |
+| pose_mAP50 | 0.8450 | 0.8450 | +0.0000 |
+| pose_mAP50-95 | 0.6853 | 0.6908 | +0.0055 |
+| pose_precision | 0.9734 | 0.9792 | +0.0058 |
+| pose_recall | 0.8462 | 0.8462 | +0.0000 |
+| box_mAP50-95 | 0.8119 | 0.8041 | -0.0078 |
 
-> **Chưa chạy:** Chặng 6 (Colab) chưa thực hiện. Nhãn đã khoá trước, đúng thứ tự bắt buộc của
-> `RUBRIC.md:25-26` — lịch sử commit là bằng chứng.
+Notebook chạy trên Google Colab với Tesla T4, Ultralytics 8.4.153 và dừng sớm ở epoch 39/80
+(`patience=30`). Tập đánh giá giữ nguyên 10 ảnh test/13 người; không đổi `val` sang train.
+Số liệu gốc được lưu ở `outputs/eval_model.json`.
 
 ### Trả lời năm câu hỏi ở cuối notebook
 
-1.
-2.
-3.
-4.
-5.
+1. `pose_mAP50-95` tăng **0.0055**, từ 0.6853 lên 0.6908. Mức tăng rất nhỏ, phù hợp với việc
+   chỉ có 20 ảnh train. Bộ ảnh bổ sung nhiều tư thế xe máy/xe đạp, người bị che và người nhỏ,
+   nên model điều chỉnh vị trí khớp tốt hơn một chút; tuy nhiên nó không tạo ra cải thiện rộng
+   trên mọi tình huống COCO. `pose_mAP50` và recall đứng yên cho thấy fine-tune chủ yếu tinh chỉnh
+   độ chính xác ở các ngưỡng OKS cao hơn, không tìm thêm được người hay pose mới.
+2. Trước fine-tune, `box_mAP50-95 - pose_mAP50-95 = 0.1266`; sau fine-tune chênh **0.1133**
+   (`0.8041 - 0.6908`). Model tìm và bao người dễ hơn đặt đúng 17 khớp, vì chỉ cần hộp bao quanh
+   toàn thân là đủ cho box, còn pose bị phạt khi từng khớp lệch, bị che hoặc đảo trái/phải.
+3. Ở `test_02`, model dự đoán **2 người** trong khi nhãn test có **1 người**. Skeleton thừa bám
+   vào cột/vật thể tối ở phía trái ảnh, không nằm trên một cơ thể thật. Theo bốn loại của slide 43,
+   đây là lỗi **`trượt hẳn`** (false positive toàn bộ skeleton), không phải lệch nhẹ.
+4. Ở mục 6, `train_13` có OKS thấp nhất giữa model và nhãn của tôi: **0.176**. Nhãn của tôi đáng
+   tin hơn trong ca này vì khi chấm độc lập với gold, ba người của ảnh vẫn ghép đủ, không thiếu/thừa,
+   với OKS lần lượt **0.5950 / 0.7155 / 0.8705**; model lại bất đồng rất mạnh với một người nhỏ.
+   Bằng chứng quyết định là ảnh phóng to và gold, không phải lấy nhãn của tôi làm đáp án cho model.
+5. **Có.** `train_13` cũng là ảnh annotation có người thấp điểm nhất so với gold (0.5950) và có
+   trung bình theo ảnh thấp nhất (0.7270). Ảnh có ba người ở các độ sâu khác nhau, người phía sau
+   nhỏ và ngoài vùng nét, nên cùng một bằng chứng thị giác yếu gây khó cho cả người gán lẫn model.
+   Điều này cho thấy lỗi không chỉ đến từ huấn luyện; bản thân ảnh là một ca khó cần zoom và neo
+   chiều trái/phải bằng dấu hiệu quan sát được.
 
 ## 5. Một rule evidence bạn đã dùng
 

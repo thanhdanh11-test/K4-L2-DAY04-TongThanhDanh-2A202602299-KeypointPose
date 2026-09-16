@@ -23,9 +23,20 @@
 | Hai người chồng lên nhau | Gán **xong hẳn một người rồi mới sang người kế**. Khớp của người sau bị người trước che -> `v = 1`, đặt ở vị trí ước lượng **trên cơ thể người sau**, tuyệt đối không kéo sang đường viền người trước. | Đây là cách duy nhất tránh lỗi `nham_nguoi` - lỗi số 2 của slide 46. Ví dụ: `train_03` người #1 có vai trái + khuỷu trái bị người #2 (áo da) che -> `v=1`. |
 | Người nhỏ đến mức nào thì không gán nữa | Bộ 20 ảnh này mọi người đều đủ lớn nên **gán tất cả**. Không gán: người **in trên ảnh/biển quảng cáo**, người trên màn hình, tượng, búp bê. | Nhãn phải mô tả người thật trong cảnh; ảnh in là hoạ tiết của một vật thể khác. Ví dụ đã gặp: `train_08` có các khuôn mặt in trên biển "LEARNER MODELS" -> **không gán**; `train_03` có một con búp bê dưới đất -> **không gán**. |
 
-Với mỗi luật, chèn **một ảnh mẫu** (screenshot từ CVAT) thay vì chỉ viết một câu.
-Slide 12 nói rõ: khớp không có bề mặt nhìn thấy được thì phải có ảnh mẫu, không phải
-một câu văn chung chung.
+### Ảnh mẫu kiểm chứng cho sáu luật
+
+Các ảnh dưới đây được xuất bằng `tools/visualize_pose.py` từ chính nhãn đã khoá. Màu xanh/cam
+phân biệt hai bên cơ thể; điểm vàng là khớp `v=1`. Chúng giữ nguyên vai trò bằng chứng trực quan
+của screenshot CVAT nhưng có thêm đường nối để dễ phát hiện nhầm người và đảo trái/phải.
+
+| Luật | Ảnh kiểm chứng |
+| --- | --- |
+| Hông dưới quần áo dài | ![`train_05`: hông vẫn `v=2`](outputs/vis_train/train_05.jpg) |
+| Tai bị tóc/mũ che | ![`train_04`: tai dưới mũ là `v=1`](outputs/vis_train/train_04.jpg) |
+| Người bị cắt ở mép ảnh | ![`train_01`: gối và cổ chân ngoài khung là `v=0`](outputs/vis_train/train_01.jpg) |
+| Cổ tay sau vật/thân | ![`train_07`: cổ tay cầm cán ô là `v=1`](outputs/vis_train/train_07.jpg) |
+| Hai người chồng lên nhau | ![`train_03`: mỗi skeleton bám đúng một người`](outputs/vis_train/train_03.jpg) |
+| Người thật so với ảnh in/búp bê | ![`train_08`: chỉ người thật trên xe được gán`](outputs/vis_train/train_08.jpg) |
 
 ## 3. Ba ca mơ hồ đã gặp (bắt buộc, ghi ít nhất 3)
 
@@ -80,24 +91,20 @@ một câu văn chung chung.
 - Nếu người khác quyết ngược lại thì model học sai cái gì: model học rằng poster, màn hình, tranh
   tường đều là "người" -> sinh ra rất nhiều false positive ở ảnh đường phố và cửa hàng.
 
-## 4. Sau khi so visibility report với bạn cùng nhóm
+## 4. Visibility report cá nhân (không kiểm chéo)
 
-- Khớp lệch `%v=1` nhiều nhất: `______` (bạn `___%` / họ `___%`)
-- Nguyên nhân là **guideline chưa rõ** hay **một trong hai bên gán sai**:
-- Luật mới bổ sung vào mục 2 sau khi thống nhất:
+- **Không thực hiện kiểm chéo** theo phạm vi bài làm cá nhân; bỏ qua phần so sánh với bạn cùng
+  lớp/cùng nhóm. Không có số liệu của người thứ hai nên không kết luận khớp nào lệch nhất và
+  không bổ sung luật giả dưới danh nghĩa “đã thống nhất”.
 
-> **Chưa điền được:** chưa có bài của bạn cùng nhóm để chạy
-> `tools/visibility_report.py --compare <đường dẫn>`.
+### Bảng đếm của riêng tôi
 
-### Bảng đếm của riêng tôi (để đối chiếu khi có bài của người kia)
-
-20 ảnh, 29 skeleton, 493 khớp. Tổng `v=2` 312 | `v=1` 148 | `v=0` 33 → **`%v=1` toàn bài = 30%**.
+20 ảnh, 29 skeleton, 493 khớp. Tổng `v=2` 314 | `v=1` 148 | `v=0` 31 → **`%v=1` toàn bài = 30%**.
 
 Ba khớp `%v=1` cao nhất: `right_ear` 83%, `left_ear` 76%, hai mắt 34%.
 Ba khớp `%v=1` thấp nhất: `left_shoulder` 3%, `right_shoulder` 10%, `left_elbow` 14%.
 
-Dự đoán trước khi so: `%v=1` của tôi sẽ **cao hơn gold** ở gần như mọi khớp, vì luật lớp bắt
+Khi đọc chênh lệch với gold, `%v=1` của tôi có thể **cao hơn gold** ở nhiều khớp, vì luật lớp bắt
 đặt chấm cho khớp bị che (`v=1`) trong khi COCO dùng `v=0` cho cả "bị che" lẫn "không gán nhãn".
-`README.md` mục cuối nói rõ đây không phải lỗi. Nếu bảng của bạn cùng nhóm **thấp hơn hẳn** ở
-`left_ear`/`right_ear`, nguyên nhân gần như chắc chắn là họ để `v=0` cho tai bị mũ bảo hiểm che —
-đó là bất đồng guideline, sửa guideline trước rồi mới sửa nhãn.
+`README.md` mục cuối nói rõ đây không phải lỗi. Không dùng gold thay cho một bài kiểm chéo vì hai
+nguồn áp dụng quy ước visibility khác nhau.
