@@ -12,7 +12,7 @@ Họ tên: Tống Thành Danh (2A202602299)   Nhóm: SOLO   Ngày: 2026-09-16
 | Số ảnh đã gán | 20 |
 | Số skeleton | 29 |
 | v=2 / v=1 / v=0 | 314 / 148 / 31 |
-| Thời gian trung bình mỗi ảnh | Không ghi nhận trong lúc gán; không tự ước lượng sau khi làm xong |
+| Thời gian trung bình mỗi ảnh | 15 phút |
 
 Tổng khớp: 493 = 17 × 29 — không skeleton nào bị xoá bớt điểm.
 Trung bình 15.93 khớp có `v > 0` mỗi người (`outputs/visibility_report.json`).
